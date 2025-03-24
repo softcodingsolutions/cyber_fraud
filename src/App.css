@@ -1,10 +1,11 @@
 /* styles.css */
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .app-container {
@@ -23,11 +24,11 @@ body, html {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('https://pbs.twimg.com/media/Glv3pR1aYAA23ua?format=jpg&name=large');
-  background-size: cover;
+  background-color: #096ff8;
+  background-size: contain;
   background-position: center;
   transition: filter 1s ease-in-out;
-  z-index: -2;
+  z-index: -3;
 }
 
 .blurred {
@@ -39,8 +40,16 @@ body, html {
 }
 
 .title {
-  color: blue;
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.title-image {
+  width: 100%;
+  height: 50%;
+  max-width: 600px; /* Adjust as per your requirement */
 }
 
 .spin-count-toggle {
@@ -52,16 +61,16 @@ body, html {
 .spin-count {
   font-weight: bold;
 }
-
 .wheel-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 400px;
+  width: 450px; /* Match the wheel size */
+  height: 450px; /* Ensure square aspect */
   margin: 0 auto;
+  background: url("./Assets/Edge.png") no-repeat center center;
+  background-size: contain; /* Ensures the image fits properly */
 }
 
 .spin-button {
@@ -69,18 +78,34 @@ body, html {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 10px 15px;
   font-size: 14px;
-  background-color: #fff;
-  color: black;
+  background: url("./Assets/Button.png") no-repeat center center;
+  background-size: cover;
+  color: white;
   font-weight: bold;
   border: none;
   border-radius: 50%;
-  width: 70px;
-  height: 70px;
+  width: 100px;
+  height: 100px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+/* Adjusting the ring border */
+.spin-button::before {
+  content: "";
+  position: absolute;
+  top: -25px; /* Adjusted for centering */
+  left: -25px; /* Adjusted for centering */
+  width: 150px; /* Slightly larger than button */
+  height: 150px;
+  background: url("./Assets/Border.png") no-repeat center center;
+  background-size: contain;
+  z-index: -1;
+}
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -92,16 +117,59 @@ body, html {
   justify-content: center;
   align-items: center;
   padding: 10px;
-  z-index: 5;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.bg-video {
+  position: fixed; /* Keeps it in the background */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover; /* Ensures the video covers the screen */
+  z-index: -1; /* Places it behind other content */
+}
+
+.pointer {
+  width: "150px";
+  height: "150px";
+  position: "absolute";
+  top: "-50px";
+  right: "-40px";
+  transform: "translateX(-50%) rotate(90deg)";
+}
+
+@media (max-width: 768px) {
+  /* Tablet */
+  .pointer {
+    width: 100px;
+    height: 100px;
+    top: -40px;
+    right: -30px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Mobile */
+  .pointer {
+    width: 80px;
+    height: 80px;
+    top: -30px;
+    right: -20px;
+  }
 }
 
 .popup-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
+  background: linear-gradient(to right, #ffffff, #f3f3f3);
+  padding: 25px;
+  border-radius: 12px;
   text-align: center;
-  max-width: 80vw;
-  width: 400px;
+  max-width: 90vw;
+  width: 800px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(-20px);
+  animation: slideIn 1s ease-in-out forwards;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -110,10 +178,11 @@ body, html {
 
 .popup-message {
   font-size: 18px;
-  margin-bottom: 10px;
-  color: black;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
 }
-
 .youtube-video {
   width: 100%;
   max-width: 560px;
@@ -131,19 +200,45 @@ body, html {
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
   .app-container {
-    padding: 10px 0;
+    padding: 0rem;
   }
 
   .wheel-container {
-    max-width: 300px;
-    padding-top: 0;
+    width: 80vw; /* Adjust width for smaller screens */
+    height: 80vw;
   }
 
   .popup-content {
-    width: 90%;
+    width: 100%;
     max-width: 350px;
+    padding: 20px;
+  }
+
+  .popup-message {
+    font-size: 16px;
+  }
+  .popup-overlay {
+    width: 100%;
   }
 
   .youtube-video {
