@@ -11,11 +11,12 @@ html {
 .app-container {
   text-align: center;
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  /* padding: 2rem 0; */
 }
 
 .background-overlay {
@@ -24,7 +25,7 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #096ff8;
+  background-color: black;
   background-size: contain;
   background-position: center;
   transition: filter 1s ease-in-out;
@@ -44,12 +45,14 @@ html {
   align-items: center;
   justify-content: center;
   z-index: 10;
+  margin-bottom: 1rem;
 }
 
 .title-image {
   width: 100%;
-  height: 50%;
-  max-width: 600px; /* Adjust as per your requirement */
+  max-width: 600px;
+  /* margin-bottom: 2rem; */
+  z-index: 100;
 }
 
 .spin-count-toggle {
@@ -68,9 +71,13 @@ html {
   position: relative;
   width: 450px; /* Match the wheel size */
   height: 450px; /* Ensure square aspect */
-  margin: 0 auto;
+  margin: 0 auto 10px;
   background: url("./Assets/Edge.png") no-repeat center center;
   background-size: contain; /* Ensures the image fits properly */
+}
+
+.custom-pointer path {
+  fill: #b00f22 !important; /* Change to your desired color */
 }
 
 .spin-button {
@@ -116,19 +123,19 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 10px 20px;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-in-out;
 }
 
 .bg-video {
-  position: fixed; /* Keeps it in the background */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   object-fit: cover; /* Ensures the video covers the screen */
   z-index: -1; /* Places it behind other content */
+  opacity: 0.6;
 }
 
 .pointer {
@@ -160,12 +167,26 @@ html {
   }
 }
 
+.poster-background {
+  position: fixed; /* Keeps it in the background */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  background-image: url("./Assets/poster.jpg"); /* Adjust the path */
+  background-size: contain; /* Ensures full coverage */
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1; /* Sends it behind other content */
+}
+
 .popup-content {
   background: linear-gradient(to right, #ffffff, #f3f3f3);
   padding: 25px;
   border-radius: 12px;
   text-align: center;
-  max-width: 90vw;
+  max-width: 100vw;
   width: 800px;
   box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
   transform: translateY(-20px);
@@ -190,6 +211,17 @@ html {
   margin: 20px 0;
 }
 
+.animation {
+  min-height: 100vh;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.footer-image {
+  width: 100vw; /* Keep full width */
+  height: 40%; /* Reduce height from 60% to 40% */
+  object-fit: cover;
+}
+
 .close-button {
   padding: 10px 20px;
   font-size: 16px;
@@ -198,14 +230,20 @@ html {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
 }
 
 @keyframes fadeIn {
   from {
-    opacity: 0;
+    opacity: 1;
+    transform: translateY(-100vh);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -218,9 +256,19 @@ html {
   }
 }
 
-@media (max-width: 767px) {
+@media screen and (min-width: 1024px) {
+  .footer-image {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
   .app-container {
     padding: 0rem;
+  }
+
+  .title {
+    margin-left: -10px;
   }
 
   .wheel-container {
@@ -229,9 +277,9 @@ html {
   }
 
   .popup-content {
-    width: 100%;
-    max-width: 350px;
+    width: 80%;
     padding: 20px;
+    margin-top: 90px;
   }
 
   .popup-message {
