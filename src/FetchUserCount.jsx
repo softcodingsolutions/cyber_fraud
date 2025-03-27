@@ -17,7 +17,7 @@ function FetchUserCount() {
       setLoading(false);
     });
 
-    return () => unsubscribe(); // Cleanup the listener on unmount
+    return () => unsubscribe();
   }, []);
 
   return (

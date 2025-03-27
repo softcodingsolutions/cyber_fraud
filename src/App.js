@@ -1,21 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Wheel } from "react-custom-roulette";
-import "./App.css"; // Import external styles for better handling
+import "./App.css";
 import SpinSound from "./Assets/spinsound.mp3"
 import Notification from "./Assets/notification.mp3"
-import Warning from "./Assets/warning-alarm.mp3"
-import Label from "./Assets/labeltext.png"
-import Label2 from "./Assets/textlabel2.png"
-import Pointer2 from "./Assets/pointer3.png"
-import textvideo from "./Assets/text.mp4"
-import headung from "./Assets/headung.png"
 import heading from "./Assets/heading.png"
-import bgvideo from "./Assets/Bgvideo3.mp4"
-import bgVideoSq from "./Assets/bg-video-sq.mp4"
-import Poster from "./Assets/poster.jpg"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FetchUserCount from "./FetchUserCount"
-import { db, ref, get, update } from "./firebase";
+import { db} from "./firebase";
 import { doc, updateDoc, increment } from "firebase/firestore";
 import newbg from "./Assets/newbg.mp4"
 import Footer from "./Assets/Footer.png"
@@ -83,7 +74,6 @@ const App = () => {
   const handleStopSpinning = () => {
     setMustSpin(false);
     spinSound.current.pause();
-    // spinSound.current.currentTime = 0; 
     notiSound.current.currentTime = 0;
 
 
@@ -115,7 +105,6 @@ const App = () => {
         }
         setMessageIndex(messageIndex + 1);
       }, 3000);
-      // notiSound.current.pause();
       return () => clearTimeout(timer);
     }
   }, [messageIndex]);
@@ -139,7 +128,33 @@ const App = () => {
                 />) :
               (
                 <>
-                  <div className="poster-background">
+                  <div className="poster-container">
+                    <div className="poster-background"></div>
+                    <a href="https://www.youtube.com/embed/HbtLgiEMjb4?autoplay=1" style={{ textDecoration: "none" }}>
+                      <button className="poster-button">
+                        <span>
+                          <svg
+                            height="18px"
+                            width="18px"
+                            version="1.1"
+                            id="Layer_1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 461.001 461.001"
+                            fill="#000000"
+                          >
+                            <g id="SVGRepo_iconCarrier">
+                              <g>
+                                <path
+                                  style={{ fill: "#F61C0D" }}
+                                  d="M365.257,67.393H95.744C42.866,67.393,0,110.259,0,163.137v134.728 c0,52.878,42.866,95.744,95.744,95.744h269.513c52.878,0,95.744-42.866,95.744-95.744V163.137 C461.001,110.259,418.135,67.393,365.257,67.393z M300.506,237.056l-126.06,60.123c-3.359,1.602-7.239-0.847-7.239-4.568V168.607 c0-3.774,3.982-6.22,7.348-4.514l126.06,63.881C304.363,229.873,304.298,235.248,300.506,237.056z"
+                                />
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        &nbsp;Watch Trailer
+                      </button>
+                    </a>
                   </div>
                 </>
               )
@@ -170,19 +185,9 @@ const App = () => {
                       style: {
                         top: "-20px",
                         right: "50px",
-                        rotate: "-20deg",
+                        rotate: "-30deg",
                       }
                     }}
-                  // pointerProps={{
-                  //   style: {
-                  //     position: "absolute",
-                  //     top: "-20px",
-                  //     right: "50px",
-                  //     width: "50px", // Adjust size
-                  //     height: "50px",
-                  //   },
-                  //   children: <img src={Pointer2} alt="Pointer" style={{ width: "100%", height: "100%" }} />
-                  // }} 
                   />
                   <button className="spin-button .spin-button::before" onClick={handleSpinClick}>
                     {betterLuck ? "Spin Again" : "Spin"}

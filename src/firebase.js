@@ -3,13 +3,15 @@ import { getDatabase, ref, set, get, child, update } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD8nh0Pj2uEl8dvFHW9r8QovKKp9eLgG18",
-    authDomain: "cyber-c3aee.firebaseapp.com",
-    projectId: "cyber-c3aee",
-    storageBucket: "cyber-c3aee.firebasestorage.app",
-    messagingSenderId: "198830556900",
-    appId: "1:198830556900:web:253629a89ff36d91a34ef1"
+    apiKey: process.env.REACT_APP_apiKey,
+    authDomain: process.env.REACT_APP_authDomain,
+    projectId: process.env.REACT_APP_projectId,
+    storageBucket: process.env.REACT_APP_storageBucket,
+    messagingSenderId: process.env.REACT_APP_messagingSenderId,
+    appId: process.env.REACT_APP_appId
 };
+
+console.log(firebaseConfig)
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
