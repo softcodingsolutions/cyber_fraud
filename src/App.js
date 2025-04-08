@@ -6,7 +6,7 @@ import Notification from "./Assets/notification.mp3"
 import heading from "./Assets/heading.png"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FetchUserCount from "./FetchUserCount"
-import { db} from "./firebase";
+import { db } from "./firebase";
 import { doc, updateDoc, increment } from "firebase/firestore";
 import newbg from "./Assets/newbg.mp4"
 import Footer from "./Assets/Footer.png"
@@ -25,9 +25,9 @@ const App = () => {
   const [showposter, setshowposter] = useState(false)
 
   const messages = [
-    "Bank Alert: Your A/C XXXXX180425 is debited ₹2500.",
-    "Bank Alert: Your A/C XXXXX180425 balance is ₹0.",
-    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 18/04/2025. Watch the trailer below!"
+    "Bank Alert: Your A/C XXXXX010525 is debited ₹2500.",
+    "Bank Alert: Your A/C XXXXX010525 balance is ₹0.",
+    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 01/05/2025. Watch the trailer below!"
   ];
 
   const data = [
@@ -193,11 +193,7 @@ const App = () => {
                     {betterLuck ? "Spin Again" : "Spin"}
                   </button>
                 </div>
-
-
-                <div>
-                  <img src={Footer} alt="" width={"100vw"} height={"50px"} className="footer-image" />
-                </div>
+                <img src={Footer} alt="Footer" className="footer-image" />
 
               </>
 
