@@ -209,8 +209,8 @@ const App = () => {
                       <>
                         <iframe
                           className="youtube-video"
-                          src="https://youtu.be/C2aMLRioxE4?autoplay=1"
-                          title="YouTube video player"
+                          src="https://www.youtube.com/embed/C2aMLRioxE4"
+                          title="Shastra - Official Trailer"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
