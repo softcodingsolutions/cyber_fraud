@@ -27,7 +27,7 @@ const App = () => {
   const messages = [
     "Bank Alert: Your A/C XXXXX010525 is debited ₹2500.",
     "Bank Alert: Your A/C XXXXX010525 balance is ₹0.",
-    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 01/05/2025. Watch the trailer below!"
+    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 01/05/2025.Watch the trailer below! Suspect cyber fraud or unauthorized debit? 📞 Call India’s Cyber Crime Helpline: 1930."
   ];
 
   const data = [
@@ -130,7 +130,7 @@ const App = () => {
                 <>
                   <div className="poster-container">
                     <div className="poster-background"></div>
-                    <a href="https://www.youtube.com/embed/HbtLgiEMjb4?autoplay=1" style={{ textDecoration: "none" }}>
+                    <a href="https://youtu.be/C2aMLRioxE4?autoplay=1" style={{ textDecoration: "none" }}>
                       <button className="poster-button">
                         <span>
                           <svg
@@ -209,7 +209,7 @@ const App = () => {
                       <>
                         <iframe
                           className="youtube-video"
-                          src="https://www.youtube.com/embed/_ATlSlW8uZk"
+                          src="https://youtu.be/C2aMLRioxE4?autoplay=1"
                           title="YouTube video player"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
