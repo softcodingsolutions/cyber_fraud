@@ -1,55 +1,132 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Wheel } from "react-custom-roulette";
 import "./App.css";
+import "./output.css"
 import SpinSound from "./Assets/spinsound.mp3"
 import Notification from "./Assets/notification.mp3"
 import heading from "./Assets/heading.png"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FetchUserCount from "./FetchUserCount"
-import { db } from "./firebase";
+import { db, set } from "./firebase";
 import { doc, updateDoc, increment } from "firebase/firestore";
+import { getDoc, setDoc } from "firebase/firestore";
 import newbg from "./Assets/newbg.mp4"
 import Footer from "./Assets/Footer.png"
+import LoginPage from "./Login Page/LoginPage";
+import Dashboard from "./Dashboard/Dashboard";
+import Form from "./Form/Form"
 
 const App = () => {
   const [mustSpin, setMustSpin] = useState(false);
+  const [disablespin, setdisablespin] = useState(false)
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [messageIndex, setMessageIndex] = useState(-1);
   const [betterLuck, setBetterLuck] = useState(false);
   const [showSpinCount, setShowSpinCount] = useState(false);
   const [spinCount, setSpinCount] = useState(() => Number(localStorage.getItem("spinCount")) || 0);
-
   const spinSound = useRef(new Audio(SpinSound));
   const notiSound = useRef(new Audio(Notification));
   const [showposter, setshowposter] = useState(false)
+  const [jackpot, setjackpot] = useState(false)
 
   const messages = [
     "Bank Alert: Your A/C XXXXX010525 is debited ₹2500.",
     "Bank Alert: Your A/C XXXXX010525 balance is ₹0.",
-    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 01/05/2025.Watch the trailer below! Suspect cyber fraud or unauthorized debit? 📞 Call India’s Cyber Crime Helpline: 1930."
+    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 01/05/2025.Watch the trailer below! Suspect cyber fraud or unauthorized debit?"
   ];
 
   const data = [
     { option: "WIN ₹500", style: { backgroundColor: "#d1071f", textColor: "#ffffff" } },
     { option: "WIN ₹1000", style: { backgroundColor: "#ffbd59", textColor: "#ffffff" } },
-    { option: "JACKPOT", style: { backgroundColor: "#d1071f", textColor: "#ffffff" } },
+    { option: "WIN TICKETS", style: { backgroundColor: "#d1071f", textColor: "#ffffff" } },
     { option: "WIN ₹1500", style: { backgroundColor: "#ffbd59", textColor: "#ffffff" } },
     { option: "WIN ₹2000", style: { backgroundColor: "#d1071f", textColor: "#ffffff" } },
     { option: "LOSE", style: { backgroundColor: "#ffbd59", textColor: "#ffffff" } },
   ]
 
-  const handleSpinClick = () => {
-    if (!mustSpin) {
-      const newPrizeNumber = Math.floor(Math.random() * data.length);
-      setPrizeNumber(newPrizeNumber);
-      setMustSpin(true);
-      setSpinCount(spinCount + 1);
-      incrementUserCount()
-      localStorage.setItem("spinCount", spinCount + 1);
-      spinSound.current.currentTime = 0;
-      spinSound.current.play();
+  const handleSpinClick = async () => {
+    if (mustSpin) return;
+    setdisablespin(true)
+    const currentHour = new Date().getHours();
+    const isRestrictedTime = (currentHour >= 19 || currentHour < 9);
+
+    let shouldDisableTickets = false;
+
+    const today = new Date();
+    const formattedToday = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+
+    const docRef = doc(db, "Winners", "winner");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const winnerData = docSnap.data();
+      console.log("Winners Data", winnerData);
+      if (winnerData?.date === formattedToday) {
+        if (winnerData?.winnerCount >= 20) {
+          shouldDisableTickets = true;
+        }
+      } else {
+        await setDoc(docRef, {
+          date: formattedToday,
+          winnerCount: 0
+        });
+      }
+    } else {
+      await setDoc(docRef, {
+        date: formattedToday,
+        winnerCount: 0
+      });
     }
+
+    // Ensure `data` is defined — probably coming from props
+    const availableOptions = (shouldDisableTickets || isRestrictedTime)
+      ? data.filter(item => item.option !== "WIN TICKETS")
+      : data;
+
+    const userCountRef = doc(db, "UserCount", "1o5A6ZxsWRHJDwJu98yd");
+    const userCountSnap = await getDoc(userCountRef);
+
+    let userCount = 0;
+    if (userCountSnap.exists()) {
+      userCount = userCountSnap.data().UserCount || 0;
+    }
+
+    console.log("User Count", userCount);
+
+    let newPrizeNumber;
+    const canShowJackpot = (userCount % 50 === 0) && !shouldDisableTickets && !isRestrictedTime;
+    console.log("Can Show Jackpot", canShowJackpot);
+
+    if (canShowJackpot) {
+      newPrizeNumber = 2;
+    } else {
+      newPrizeNumber = Math.floor(Math.random() * availableOptions.length);
+    }
+
+    const selectedOption = availableOptions[newPrizeNumber];
+    const originalIndex = data.findIndex(item => item.option === selectedOption.option);
+    console.log("Selected Option", selectedOption);
+    console.log("Original Index", originalIndex);
+
+    if (newPrizeNumber === 2) {
+      await updateDoc(docRef, {
+        winnerCount: increment(1),
+      });
+    }
+
+    // Log the state of prize before setting it
+    console.log("Setting prize to index", originalIndex);
+
+    spinSound.current.currentTime = 0;
+    spinSound.current.play();
+    setPrizeNumber(originalIndex); // This triggers where the wheel stops
+    setSpinCount(prev => prev + 1);
+    incrementUserCount();
+    setMustSpin(true); // Trigger wheel animation immediately
+    localStorage.setItem("spinCount", spinCount + 1);
+    setdisablespin(false)
+
   };
 
   const incrementUserCount = async () => {
@@ -70,11 +147,22 @@ const App = () => {
     };
   }, []);
 
+  console.log(prizeNumber, "juhsuaushauhs")
 
   const handleStopSpinning = () => {
+    console.log(prizeNumber, "shuasusuaushah")
     setMustSpin(false);
     spinSound.current.pause();
     notiSound.current.currentTime = 0;
+    console.log("HELLLLLO", data[prizeNumber])
+
+    if (data[prizeNumber].option === "WIN TICKETS") {
+      setTimeout(() => {
+        notiSound.current.play();
+        setjackpot(true);
+      }, 1000);
+      return
+    }
 
 
     if (data[prizeNumber].option === "LOSE") {
@@ -114,7 +202,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={
           <div className="app-container">
-            <div className={`background-overlay ${messageIndex < messages.length - 1 ? "clear" : "clear"}`}></div>
+            <div className={`background-overlay whitespace-pre-wrap
+              ${messageIndex < messages.length - 1 ? "clear" : "clear"}`}></div>
 
             {!showposter ?
               (
@@ -161,40 +250,41 @@ const App = () => {
 
             }
 
-            {!showposter && (
+            {!showposter && !jackpot && (
               <>
-                <div className="title">
-                  <img src={heading} alt="heading" className="title-image" />
-                </div>
-                {showSpinCount && <p className="spin-count">Spins Count: {spinCount}</p>}
+                <div className="no-scrollbar">
+                  <div className="title">
+                    <img src={heading} alt="heading" className="title-image" />
+                  </div>
+                  {showSpinCount && <p className="spin-count">Spins Count: {spinCount}</p>}
 
-                <div className="wheel-container">
-                  <Wheel
-                    mustStartSpinning={mustSpin}
-                    prizeNumber={prizeNumber}
-                    data={data}
-                    onStopSpinning={handleStopSpinning}
-                    outerBorderColor="#24544e"
-                    outerBorderWidth={5}
-                    radiusLineColor="#000"
-                    radiusLineWidth={2}
-                    fontSize={18}
-                    innerRadius={30}
-                    spinDuration={0.3}
-                    pointerProps={{
-                      style: {
-                        top: "-20px",
-                        right: "50px",
-                        rotate: "-30deg",
-                      }
-                    }}
-                  />
-                  <button className="spin-button .spin-button::before" onClick={handleSpinClick}>
-                    {betterLuck ? "Spin Again" : "Spin"}
-                  </button>
+                  <div className="wheel-container">
+                    <Wheel
+                      mustStartSpinning={mustSpin}
+                      prizeNumber={prizeNumber}
+                      data={data}
+                      onStopSpinning={handleStopSpinning}
+                      outerBorderColor="#24544e"
+                      outerBorderWidth={5}
+                      radiusLineColor="#000"
+                      radiusLineWidth={2}
+                      fontSize={18}
+                      innerRadius={30}
+                      spinDuration={1}
+                      pointerProps={{
+                        style: {
+                          top: "-20px",
+                          right: "50px",
+                          rotate: "-30deg",
+                        }
+                      }}
+                    />
+                    <button className="spin-button .spin-button::before" onClick={handleSpinClick} disabled={disablespin}>
+                      {betterLuck ? "Spin Again" : "Spin"}
+                    </button>
+                  </div>
+                  <img src={Footer} alt="Footer" className="footer-image" />
                 </div>
-                <img src={Footer} alt="Footer" className="footer-image" />
-
               </>
 
             )}
@@ -216,6 +306,9 @@ const App = () => {
                           allowFullScreen
                         ></iframe>
                         <button className="close-button" onClick={() => setShowPopup(false)}>Close</button>
+                        <p className="my-2">
+                          📞 Think Before You Click,Report Cyber Fraud's at 1930.
+                        </p>
                       </>
                     )}
                   </div>
@@ -233,9 +326,20 @@ const App = () => {
                 </div>
               </div>
             )}
+
+            {jackpot && (
+              <>
+                <div>
+                  <Form onClose={() => { setjackpot(false); setshowposter(true) }} />
+                </div>
+              </>
+            )}
+
           </div>
         } />
         <Route path="/usercount" element={<FetchUserCount />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );

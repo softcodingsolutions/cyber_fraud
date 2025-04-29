@@ -1,17 +1,29 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+import "./index.css";
+import "./output.css"
+import App from "./App.js";
+import axios from "axios";
+// Axios global configuration
+axios.defaults.baseURL = "https://filmansh.cinemapro.in/api/auth";
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = true;
+axios.interceptors.request.use(
+  (config) => {
+    // Assuming ls is some utility for accessing localStorage
+    const accessToken = localStorage.getItem("access_token");
+    if (accessToken) {
+      config.headers["Authorization"] = `${accessToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+// Render the React App
+createRoot(document.getElementById("root")).render(
   <>
     <App />
   </>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
