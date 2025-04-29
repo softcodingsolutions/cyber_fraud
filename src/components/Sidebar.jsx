@@ -49,13 +49,13 @@ export default function Sidebar({ onWidthChange, onPageSelect }) {
       >
         {/* Navigation Links */}
         <nav className="">
-          <NavItem
+          {/* <NavItem
             icon={<Home size={20} />}
             text="Home"
             isActive={activePage === "home"}
             onClick={() => handlePageSelect("home")}
             isOpen={isOpen}
-          />
+          /> */}
           <NavItem
             icon={<User size={20} />}
             text="Winner List"

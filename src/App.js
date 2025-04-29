@@ -29,11 +29,12 @@ const App = () => {
   const notiSound = useRef(new Audio(Notification));
   const [showposter, setshowposter] = useState(false)
   const [jackpot, setjackpot] = useState(false)
+  const [wait, setwait] = useState(false)
 
   const messages = [
     "Bank Alert: Your A/C XXXXX010525 is debited ₹2500.",
     "Bank Alert: Your A/C XXXXX010525 balance is ₹0.",
-    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 01/05/2025.Watch the trailer below! Suspect cyber fraud or unauthorized debit?"
+    "Don't worry! Your balance is safe. Our upcoming Gujarati movie 'શસ્ત્ર' based on Cyber Fraud releasing on 01/05/2025.Watch the trailer below!"
   ];
 
   const data = [
@@ -47,6 +48,7 @@ const App = () => {
 
   const handleSpinClick = async () => {
     if (mustSpin) return;
+    setwait(true)
     setdisablespin(true)
     const currentHour = new Date().getHours();
     const isRestrictedTime = (currentHour >= 19 || currentHour < 9);
@@ -119,6 +121,7 @@ const App = () => {
     console.log("Setting prize to index", originalIndex);
 
     spinSound.current.currentTime = 0;
+    spinSound.current.loop = true;
     spinSound.current.play();
     setPrizeNumber(originalIndex); // This triggers where the wheel stops
     setSpinCount(prev => prev + 1);
@@ -126,7 +129,7 @@ const App = () => {
     setMustSpin(true); // Trigger wheel animation immediately
     localStorage.setItem("spinCount", spinCount + 1);
     setdisablespin(false)
-
+    setwait(false)
   };
 
   const incrementUserCount = async () => {
@@ -150,9 +153,11 @@ const App = () => {
   console.log(prizeNumber, "juhsuaushauhs")
 
   const handleStopSpinning = () => {
+    spinSound.current.pause();
+    setwait(false)
     console.log(prizeNumber, "shuasusuaushah")
     setMustSpin(false);
-    spinSound.current.pause();
+
     notiSound.current.currentTime = 0;
     console.log("HELLLLLO", data[prizeNumber])
 
@@ -280,7 +285,8 @@ const App = () => {
                       }}
                     />
                     <button className="spin-button .spin-button::before" onClick={handleSpinClick} disabled={disablespin}>
-                      {betterLuck ? "Spin Again" : "Spin"}
+                      {wait ? "Wait" : "Spin"
+                      }
                     </button>
                   </div>
                   <img src={Footer} alt="Footer" className="footer-image" />
@@ -307,7 +313,7 @@ const App = () => {
                         ></iframe>
                         <button className="close-button" onClick={() => setShowPopup(false)}>Close</button>
                         <p className="my-2">
-                          📞 Think Before You Click,Report Cyber Fraud's at 1930.
+                          📞 Think Before You Click,Report Cyber Frauds at 1930.
                         </p>
                       </>
                     )}
