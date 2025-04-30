@@ -15,6 +15,8 @@ import Footer from "./Assets/Footer.png"
 import LoginPage from "./Login Page/LoginPage";
 import Dashboard from "./Dashboard/Dashboard";
 import Form from "./Form/Form"
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const App = () => {
   const [mustSpin, setMustSpin] = useState(false);
@@ -24,12 +26,23 @@ const App = () => {
   const [messageIndex, setMessageIndex] = useState(-1);
   const [betterLuck, setBetterLuck] = useState(false);
   const [showSpinCount, setShowSpinCount] = useState(false);
-  const [spinCount, setSpinCount] = useState(() => Number(localStorage.getItem("spinCount")) || 0);
+  const [spinCount, setSpinCount] = useState(() => Number(localStorage.getItem("filmansh-spin-count")) || 0);
   const spinSound = useRef(new Audio(SpinSound));
   const notiSound = useRef(new Audio(Notification));
   const [showposter, setshowposter] = useState(false)
   const [jackpot, setjackpot] = useState(false)
   const [wait, setwait] = useState(false)
+  const MySwal = withReactContent(Swal);
+
+  useEffect(() => {
+    const storedCount = localStorage.getItem("filmansh-spin-count");
+    if (storedCount !== null) {
+      setSpinCount(Number(storedCount));
+    } else {
+      localStorage.setItem("filmansh-spin-count", "0");
+      setSpinCount(0);
+    }
+  }, []);
 
   const messages = [
     "Bank Alert: Your A/C XXXXX010525 is debited ₹2500.",
@@ -46,8 +59,32 @@ const App = () => {
     { option: "LOSE", style: { backgroundColor: "#ffbd59", textColor: "#ffffff" } },
   ]
 
+  const increaseSpinCount = () => {
+    const current = localStorage.getItem("filmansh-spin-count");
+    const newCount = current ? Number(current) + 1 : 1;
+    localStorage.setItem("filmansh-spin-count", newCount.toString());
+    setSpinCount(newCount);
+  };
+
+
   const handleSpinClick = async () => {
     if (mustSpin) return;
+    if (spinCount >= 3) {
+      MySwal.fire({
+        icon: 'info',
+        title: 'No More Spins Available',
+        text: 'You have reached the maximum number of spins allowed. Thank you for participating!',
+        confirmButtonText: 'OK',
+        allowOutsideClick: false,
+        allowEscapeKey: false
+      }).then(() => {
+        window.close();
+      });
+      return;
+    }
+
+    setSpinCount(spinCount + 1)
+    increaseSpinCount()
     setwait(true)
     setdisablespin(true)
     const currentHour = new Date().getHours();
@@ -63,7 +100,6 @@ const App = () => {
 
     if (docSnap.exists()) {
       const winnerData = docSnap.data();
-      console.log("Winners Data", winnerData);
       if (winnerData?.date === formattedToday) {
         if (winnerData?.winnerCount >= 20) {
           shouldDisableTickets = true;
@@ -94,11 +130,8 @@ const App = () => {
       userCount = userCountSnap.data().UserCount || 0;
     }
 
-    console.log("User Count", userCount);
-
     let newPrizeNumber;
     const canShowJackpot = (userCount % 50 === 0) && !shouldDisableTickets && !isRestrictedTime;
-    console.log("Can Show Jackpot", canShowJackpot);
 
     if (canShowJackpot) {
       newPrizeNumber = 2;
@@ -107,18 +140,13 @@ const App = () => {
     }
 
     const selectedOption = availableOptions[newPrizeNumber];
-    const originalIndex = data.findIndex(item => item.option === selectedOption.option);
-    console.log("Selected Option", selectedOption);
-    console.log("Original Index", originalIndex);
+    const originalIndex = data.findIndex(item => item.option === selectedOption.option)
 
     if (newPrizeNumber === 2) {
       await updateDoc(docRef, {
         winnerCount: increment(1),
       });
     }
-
-    // Log the state of prize before setting it
-    console.log("Setting prize to index", originalIndex);
 
     spinSound.current.currentTime = 0;
     spinSound.current.loop = true;
@@ -127,20 +155,16 @@ const App = () => {
     setSpinCount(prev => prev + 1);
     incrementUserCount();
     setMustSpin(true); // Trigger wheel animation immediately
-    localStorage.setItem("spinCount", spinCount + 1);
     setdisablespin(false)
     setwait(false)
   };
 
   const incrementUserCount = async () => {
     const count = doc(db, "UserCount", "1o5A6ZxsWRHJDwJu98yd");
-    console.log("Incrementing User Count", count)
     await updateDoc(count, {
       UserCount: increment(1)
     }).then(() => {
-      console.log("User Count Incremented")
     }).catch((error) => {
-      console.log("Error updating User Count:", error)
     })
   };
 
@@ -150,16 +174,13 @@ const App = () => {
     };
   }, []);
 
-  console.log(prizeNumber, "juhsuaushauhs")
 
   const handleStopSpinning = () => {
     spinSound.current.pause();
     setwait(false)
-    console.log(prizeNumber, "shuasusuaushah")
     setMustSpin(false);
 
     notiSound.current.currentTime = 0;
-    console.log("HELLLLLO", data[prizeNumber])
 
     if (data[prizeNumber].option === "WIN TICKETS") {
       setTimeout(() => {

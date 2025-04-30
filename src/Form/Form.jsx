@@ -91,11 +91,8 @@ export default function WinnerForm({ onClose }) {
         }).then(() => {
           onClose();
         });
-
-        console.log("Response:", res.data);
       } catch (error) {
         const message = error.response.data.message || "Something went wrong";
-        console.error("Submission failed:", error);
         MySwal.fire({
           icon: "error",
           title: "Oops...",
