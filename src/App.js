@@ -116,8 +116,6 @@ const App = () => {
         winnerCount: 0
       });
     }
-
-    // Ensure `data` is defined — probably coming from props
     const availableOptions = (shouldDisableTickets || isRestrictedTime)
       ? data.filter(item => item.option !== "WIN TICKETS")
       : data;
@@ -129,10 +127,8 @@ const App = () => {
     if (userCountSnap.exists()) {
       userCount = userCountSnap.data().UserCount || 0;
     }
-
     let newPrizeNumber;
     const canShowJackpot = (userCount % 50 === 0) && !shouldDisableTickets && !isRestrictedTime;
-
     if (canShowJackpot) {
       newPrizeNumber = 2;
     } else {
@@ -142,7 +138,7 @@ const App = () => {
     const selectedOption = availableOptions[newPrizeNumber];
     const originalIndex = data.findIndex(item => item.option === selectedOption.option)
 
-    if (newPrizeNumber === 2) {
+    if (selectedOption.option === "WIN TICKETS") {
       await updateDoc(docRef, {
         winnerCount: increment(1),
       });
@@ -151,10 +147,10 @@ const App = () => {
     spinSound.current.currentTime = 0;
     spinSound.current.loop = true;
     spinSound.current.play();
-    setPrizeNumber(originalIndex); // This triggers where the wheel stops
+    setPrizeNumber(originalIndex);
     setSpinCount(prev => prev + 1);
     incrementUserCount();
-    setMustSpin(true); // Trigger wheel animation immediately
+    setMustSpin(true);
     setdisablespin(false)
     setwait(false)
   };
