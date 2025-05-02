@@ -32,14 +32,27 @@ const App = () => {
   const [showposter, setshowposter] = useState(false)
   const [jackpot, setjackpot] = useState(false)
   const [wait, setwait] = useState(false)
+  const [date, setdate] = useState("")
   const MySwal = withReactContent(Swal);
+
+
+  const today = new Date();
+  const formattedToday = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
 
   useEffect(() => {
     const storedCount = localStorage.getItem("filmansh-spin-count");
-    if (storedCount !== null) {
-      setSpinCount(Number(storedCount));
+    const storedDate = localStorage.getItem("filmash-spin-date");
+    if (storedDate === formattedToday) {
+      if (storedCount !== null) {
+        setSpinCount(Number(storedCount));
+      } else {
+        localStorage.setItem("filmansh-spin-count", "0");
+        localStorage.setItem("filmash-spin-date", formattedToday)
+        setSpinCount(0);
+      }
     } else {
       localStorage.setItem("filmansh-spin-count", "0");
+      localStorage.setItem("filmash-spin-date", formattedToday)
       setSpinCount(0);
     }
   }, []);
@@ -72,8 +85,8 @@ const App = () => {
     if (spinCount >= 3) {
       MySwal.fire({
         icon: 'info',
-        title: 'No More Spins Available',
-        text: 'You have reached the maximum number of spins allowed. Thank you for participating!',
+        title: 'Pls Try Again after 24 hours.',
+        text: 'You have reached the maximum number of spins allowed.\nThank you for participating!',
         confirmButtonText: 'OK',
         allowOutsideClick: false,
         allowEscapeKey: false
@@ -91,17 +104,13 @@ const App = () => {
     const isRestrictedTime = (currentHour >= 19 || currentHour < 9);
 
     let shouldDisableTickets = false;
-
-    const today = new Date();
-    const formattedToday = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-
     const docRef = doc(db, "Winners", "winner");
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       const winnerData = docSnap.data();
       if (winnerData?.date === formattedToday) {
-        if (winnerData?.winnerCount >= 20) {
+        if (winnerData?.winnerCount >= 50) {
           shouldDisableTickets = true;
         }
       } else {
