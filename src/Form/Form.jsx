@@ -249,7 +249,11 @@ export default function WinnerForm({ onClose }) {
             Submit Winner Details
           </button>
         </form>
-        <div className="mt-6 text-center text-xs text-gray-500">
+        <div className="mt-4 text-center text-md text-gray-500">
+          🎫 Our team will contact you for ticket distribution.
+        </div>
+
+        <div className="mt-4 text-center text-xs text-gray-500">
           If you have any query, please contact on mail: <br />
           <a
             href="mailto:spin-win@filmansh.com"

@@ -98,6 +98,7 @@ const App = () => {
 
     setSpinCount(spinCount + 1)
     increaseSpinCount()
+    await incrementUserCount();
     setwait(true)
     setdisablespin(true)
     const currentHour = new Date().getHours();
@@ -110,7 +111,7 @@ const App = () => {
     if (docSnap.exists()) {
       const winnerData = docSnap.data();
       if (winnerData?.date === formattedToday) {
-        if (winnerData?.winnerCount >= 50) {
+        if (winnerData?.winnerCount >= 25) {
           shouldDisableTickets = true;
         }
       } else {
@@ -134,7 +135,7 @@ const App = () => {
 
     let userCount = 0;
     if (userCountSnap.exists()) {
-      userCount = userCountSnap.data().UserCount || 0;
+      userCount = await userCountSnap.data().UserCount || 0;
     }
     let newPrizeNumber;
     const canShowJackpot = (userCount % 50 === 0) && !shouldDisableTickets && !isRestrictedTime;
@@ -158,7 +159,6 @@ const App = () => {
     spinSound.current.play();
     setPrizeNumber(originalIndex);
     setSpinCount(prev => prev + 1);
-    incrementUserCount();
     setMustSpin(true);
     setdisablespin(false)
     setwait(false)
