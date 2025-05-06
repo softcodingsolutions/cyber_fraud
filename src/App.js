@@ -102,9 +102,8 @@ const App = () => {
     setwait(true)
     setdisablespin(true)
     const currentHour = new Date().getHours();
-    const isRestrictedTime = (currentHour >= 19 || currentHour < 9);
-
-    let shouldDisableTickets = false;
+    const isRestrictedTime = true
+    let shouldDisableTickets = true;
     const docRef = doc(db, "Winners", "winner");
     const docSnap = await getDoc(docRef);
 
